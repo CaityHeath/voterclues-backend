@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
   res.send('Server is UP');
 })
 
-app.get('/legislators', getLegislators);
+app.get('/legislators/:state', getLegislators);
 app.get('/legislator/:id', getOneLegislator);
 
 
@@ -39,8 +39,9 @@ function getOneLegislator(request, response){
 }
 
 
-function getLegislators (req, res){
-  let state = 'WA';
+function getLegislators (request, response){
+  let state = request.params.state;
+  console.log(state);
   let url = `http://www.opensecrets.org/api/?method=getLegislators&id=${state}&apikey=${process.env.OPENSECRETS}&output=json`
 
   return superagent.get(url)
@@ -51,6 +52,7 @@ function getLegislators (req, res){
       for(let i = 0; i < reps.response.legislator.length; i++){
         repsArray.push(new Reps(reps.response.legislator[i]['@attributes']));
       }
+      console.log(repsArray);
       return cacheReps(repsArray);
     })
      .catch(err => {
